@@ -20,15 +20,15 @@ Usage: aws-ab-util <command> [parameters]
   delete
 ```
 
+
 Creating 2x load test servers.
 ```
 # aws-ab-util create 2
 Creating Load Test Servers...
 ```
 
-Running a load test with 100 requests, per thread, per server.
 
-It will result in 1.000 request (100 requests x 5 threads  x 2 servers).
+Running a load test with 100 requests, per thread, per server. This will result in 1.000 request (100 requests x 5 threads  x 2 servers).
 ```
 # aws-ab-util run 5 100 https://www.myserver.com/
 Running Load Test...
