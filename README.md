@@ -2,6 +2,11 @@
 
 AWS AB Util is a utility CLI tool to manage deployment and execution of distributed load test using AB (Apache Bench) using AWS SSM and EC2.
 
+## Requirements
+- OS: Linux, MacOS
+- Software: [AWS CLI](https://aws.amazon.com/cli/)
+
+_Note: AWS CLI must be configured._
 
 ## Install
 ```
