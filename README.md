@@ -10,7 +10,7 @@ AWS AB Util is a CLI utility tool to manage deployment and execution of distribu
 ## Install
 ```
 git clone https://github.com/aws-samples/aws-ab-util.git
-mv aws-ab-util/aws-ab-util /usr/local/bin/
+sudo mv aws-ab-util/aws-ab-util /usr/local/bin/
 rm -fr aws-ab-util
 ```
 
@@ -46,7 +46,7 @@ Deleting Load Test Servers...
 
 ## Uninstall
 ```
-rm /usr/local/bin/aws-ab-util
+sudo rm /usr/local/bin/aws-ab-util
 ```
 
 ## SSM Run Command View
