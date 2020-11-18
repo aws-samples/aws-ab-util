@@ -5,7 +5,7 @@ AWS AB Util is a CLI utility tool to manage deployment and execution of distribu
 ## Requirements
 - OS: Linux, MacOS
 - Software: [AWS CLI](https://aws.amazon.com/cli/)
-- IAM Permissions: AWS SSM Run Command
+- IAM Permissions: AWS SSM Run Command, Amazon EC2 Admin Access
 
 ## Install
 ```
