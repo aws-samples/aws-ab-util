@@ -1,0 +1,65 @@
+#!/bin/bash
+# For usage in us-east-1, different regions requires AMI to be updated.
+
+AMI=ami-02354e95b39ca8dec
+INSTANCE_TYPE=t3a.small
+
+ROLE=AmazonSSMRoleForInstancesQuickSetup
+USER_DATA="#!/bin/bash\nsudo yum install -y httpd"
+NAME="AB Load Test"
+
+CMD=$1
+
+create() {
+	echo "Creating Load Test Servers..."
+	aws ec2 run-instances \
+		--image-id ${AMI} \
+		--instance-type ${INSTANCE_TYPE} \
+		--count ${COUNT} \
+		--associate-public-ip-address \
+		--iam-instance-profile Name=${ROLE} \
+		--tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=$NAME}]" \
+		--user-data "$(echo -e ${USER_DATA})" > /dev/null
+}
+
+delete() {
+	echo "Deleting Load Test Servers..."
+	instances=$(aws ec2 describe-instances \
+    	--filters "Name=tag:Name,Values=${NAME}" "Name=instance-state-name,Values=running" \
+    	--query "Reservations[*].Instances[*].{Instance:InstanceId}" \
+    	--output text)
+    aws ec2 terminate-instances --instance-ids ${instances} > /dev/null
+}
+
+run() {
+	echo "Running Load Test..."
+	aws ssm send-command \
+	    --document-name "AWS-RunShellScript" \
+    	--parameters "commands=[${TEST}]" \
+		--targets "Key=tag:Name,Values=${NAME}" > /dev/null
+}
+
+
+case "$CMD" in
+	create)
+		COUNT=$2
+        create
+		;;
+	delete)
+        delete
+		;;
+	run)
+		THREADS=$2
+		REQUESTS=$3
+		URL=$4
+		TEST="ab -c $THREADS -n $REQUESTS $URL"
+        run
+		;;
+	*)
+		echo "Usage: aws-ab-util <command> [parameters]"
+		echo "  run threads requests url"
+		echo "  create servers_count"
+		echo "  delete"
+		RETVAL=2
+esac
+exit $RETVAL
