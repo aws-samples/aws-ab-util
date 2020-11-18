@@ -44,11 +44,6 @@ Deleting servers
 Deleting Load Test Servers...
 ```
 
-## Uninstall
-```
-sudo rm /usr/local/bin/aws-ab-util
-```
-
 ## SSM Run Command View
 ![SSM Command Execution](images/aws-ab-command-execution.png)
 
@@ -56,6 +51,11 @@ sudo rm /usr/local/bin/aws-ab-util
 
 ## Load Test Results Example
 ![Load test results example](images/aws-ab-load-test.png)
+
+## Uninstall
+```
+sudo rm /usr/local/bin/aws-ab-util
+```
 
 ## Security
 
