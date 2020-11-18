@@ -1,6 +1,6 @@
 ## AWS AB Util 
 
-AWS AB Util is a utility CLI tool to manage deployment and execution of distributed Load Test using AB (Apache Bench) using AWS SSM and EC2.
+AWS AB Util is a utility CLI tool to manage deployment and execution of distributed load test using AB (Apache Bench) using AWS SSM and EC2.
 
 
 ## Install
@@ -27,6 +27,7 @@ Creating Load Test Servers...
 ```
 
 Running a load test with 100 requests, per thread, per server.
+
 It will result in 1.000 request (100 requests x 5 threads  x 2 servers).
 ```
 # aws-ab-util run 5 100 https://www.myserver.com/
