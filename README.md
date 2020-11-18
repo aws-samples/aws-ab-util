@@ -42,7 +42,7 @@ Deleting Load Test Servers...
 
 ## Uninstall
 ```
-rm /usr/loca/bin/aws-ab-util
+rm /usr/local/bin/aws-ab-util
 ```
 
 ## Screenshots
