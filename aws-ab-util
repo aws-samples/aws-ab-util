@@ -49,15 +49,12 @@ case "$CMD" in
         delete
 		;;
 	run)
-		THREADS=$2
-		REQUESTS=$3
-		URL=$4
-		TEST="ab -c $THREADS -n $REQUESTS $URL"
+		TEST="ab ${@:2}"
         run
 		;;
 	*)
 		echo "Usage: aws-ab-util <command> [parameters]"
-		echo "  run threads requests url"
+		echo "  run [ab-options] [http[s]://]hostname[:port]/path"
 		echo "  create servers_count"
 		echo "  delete"
 		RETVAL=2

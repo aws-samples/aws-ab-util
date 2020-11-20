@@ -19,7 +19,7 @@ Overall options.
 ```
 # aws-ab-util
 Usage: aws-ab-util <command> [parameters]
-  run threads requests url
+  run [ab-options] [http[s]://]hostname[:port]/path
   create servers_count
   delete
 ```
@@ -34,7 +34,7 @@ Creating Load Test Servers...
 
 Running a load test with 100 requests, per thread, per server. This will result in 1.000 request (100 requests x 5 threads  x 2 servers).
 ```
-# aws-ab-util run 5 100 https://www.myserver.com/
+# aws-ab-util run -c 5 -n 100 https://www.amazon.com/
 Running Load Test...
 ```
 
