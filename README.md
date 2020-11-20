@@ -35,7 +35,10 @@ Creating Load Test Servers...
 Running a load test with 100 requests, per thread, per server. This will result in 1.000 request (100 requests x 5 threads  x 2 servers).
 ```
 # aws-ab-util run -c 5 -n 100 https://www.amazon.com/
+Sending SSM Command...
 Running Load Test...
+Status: Success Success
+Detail: https://console.aws.amazon.com/systems-manager/run-command/00000000-1111-2222-3333-444444444444
 ```
 
 Deleting servers

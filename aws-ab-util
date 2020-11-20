@@ -25,18 +25,36 @@ create() {
 delete() {
 	echo "Deleting Load Test Servers..."
 	instances=$(aws ec2 describe-instances \
-    	--filters "Name=tag:Name,Values=${NAME}" "Name=instance-state-name,Values=running" \
-    	--query "Reservations[*].Instances[*].{Instance:InstanceId}" \
-    	--output text)
+		--filters "Name=tag:Name,Values=${NAME}" "Name=instance-state-name,Values=running" \
+		--query "Reservations[*].Instances[*].{Instance:InstanceId}" \
+		--output text)
     aws ec2 terminate-instances --instance-ids ${instances} > /dev/null
 }
 
 run() {
-	echo "Running Load Test..."
-	aws ssm send-command \
-	    --document-name "AWS-RunShellScript" \
-    	--parameters "commands=[${TEST}]" \
-		--targets "Key=tag:Name,Values=${NAME}" > /dev/null
+	echo "Sending SSM Command..."
+	id=$(aws ssm send-command \
+		--document-name "AWS-RunShellScript" \
+		--parameters "commands=[${TEST}]" \
+		--targets "Key=tag:Name,Values=${NAME}" \
+		--query "Command.CommandId" \
+		--output text)
+	
+	echo -n "Running Load Test"
+	while true; do
+		status=$(aws ssm list-command-invocations \
+			--command-id $id \
+			--query "CommandInvocations[*].Status" \
+			--output text)
+			
+		if [[ ! "$status" =~ "InProgress" ]]; then
+			echo -e "\nStatus: $status"
+			echo "Detail: https://console.aws.amazon.com/systems-manager/run-command/$id"
+			break
+		fi
+		echo -n .
+		sleep 2
+	done		
 }
 
 
