@@ -1,7 +1,7 @@
 
 ## AWS AB Util 
 
-AWS AB Util is a CLI utility tool to manage deployment and execution of distributed load test with AB (Apache Bench) using AWS SSM and Amazon EC2. It can generate thousands of RPS (Requests per Second) and/or Gigabytes per second of data transfer.
+AWS AB Util is a CLI utility tool to manage the deployment and execution of distributed load test with AB (Apache Bench) using AWS SSM and Amazon EC2. It can generate thousands of RPS (Requests per Second) and/or Gigabytes per second of data transfer.
 
 ## Requirements
 - OS: Linux, MacOS
