@@ -64,6 +64,7 @@ sudo rm /usr/local/bin/aws-ab-util
 
 ## Troubleshooting
 Error: Invalid IAM Instance Profile name
+
 Resolution: Create an IAM Role named **SSMInstanceProfile**, trusting in **EC2** entity, with **AmazonSSMManagedInstanceCore** policy attached [(documentation)](https://docs.aws.amazon.com/systems-manager/latest/userguide/setup-instance-profile.html#instance-profile-add-permissions).
 
 
