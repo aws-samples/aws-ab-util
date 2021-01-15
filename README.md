@@ -1,3 +1,4 @@
+
 ## AWS AB Util 
 
 AWS AB Util is a CLI utility tool to manage deployment and execution of distributed load test with AB (Apache Bench) using AWS SSM and Amazon EC2. It can generate thousands of RPS (Requests per Second) and/or Gigabytes per second of data transfer.
@@ -5,7 +6,8 @@ AWS AB Util is a CLI utility tool to manage deployment and execution of distribu
 ## Requirements
 - OS: Linux, MacOS
 - Software: [AWS CLI](https://aws.amazon.com/cli/)
-- IAM Permissions: AWS SSM Run Command, Amazon EC2 Admin Access
+- AWS CLI with permissions to execute AWS SSM Run Command and Amazon EC2 Admin Access
+- AWS IAM Role named **SSMInstanceProfile** as described in the SSM [documentation](https://docs.aws.amazon.com/systems-manager/latest/userguide/setup-instance-profile.html#instance-profile-add-permissions)
 
 ## Install
 ```
@@ -60,6 +62,11 @@ Deleting Load Test Servers...
 sudo rm /usr/local/bin/aws-ab-util
 ```
 
+## Troubleshooting
+Error: Invalid IAM Instance Profile name
+Resolution: Create an IAM Role named **SSMInstanceProfile**, trusting in **EC2** entity, with **AmazonSSMManagedInstanceCore** policy attached [(documentation)](https://docs.aws.amazon.com/systems-manager/latest/userguide/setup-instance-profile.html#instance-profile-add-permissions).
+
+
 ## Security
 
 See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
@@ -67,4 +74,3 @@ See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more inform
 ## License
 
 This library is licensed under the MIT-0 License. See the LICENSE file.
-

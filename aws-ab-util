@@ -4,7 +4,7 @@
 AMI=ami-02354e95b39ca8dec
 INSTANCE_TYPE=t3a.small
 
-ROLE=AmazonSSMRoleForInstancesQuickSetup
+ROLE=SSMInstanceProfile
 USER_DATA="#!/bin/bash\nsudo yum install -y httpd"
 NAME="AB Load Test"
 
