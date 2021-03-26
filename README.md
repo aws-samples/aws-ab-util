@@ -21,9 +21,10 @@ Overall options.
 ```
 # aws-ab-util
 Usage: aws-ab-util <command> [parameters]
-  run [ab-options] [http[s]://]hostname[:port]/path
+  cmd "[command]"
   create servers_count
   delete
+  run [ab-options] [http[s]://]hostname[:port]/[path]
 ```
 
 
@@ -47,6 +48,11 @@ Deleting servers
 ```
 # aws-ab-util delete
 Deleting Load Test Servers...
+```
+
+Executing a command to create a JSON file
+```
+aws-ab-util cmd "echo '{\"message\":\"hello world\"}' > /tmp/payload.json"
 ```
 
 ## SSM Run Command View

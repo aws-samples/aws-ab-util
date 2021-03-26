@@ -1,21 +1,77 @@
 #!/bin/bash
-# For usage in us-east-1, different regions requires AMI to be updated.
 
-AMI=ami-02354e95b39ca8dec
 INSTANCE_TYPE=t3a.small
 
 ROLE=SSMInstanceProfile
 USER_DATA="#!/bin/bash\nsudo yum install -y httpd"
 NAME="AB Load Test"
 
-CMD=$1
+get_ami_id() {
+	aws ssm get-parameters \
+		--names /aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2 \
+		--query 'Parameters[0].[Value]' \
+		--output text
+}
+
+# Workaround to support commands using quotes
+# https://github.com/aws/aws-cli/issues/5080
+create_payload_file() {
+	cmd=$1
+	escaped_cmd=${cmd//\"/\\\"} # re-escape double quotes
+	file=`mktemp /tmp/ab-util.XXXX` || exit 1
+	echo "{\"Parameters\":{\"commands\":[\"${escaped_cmd}\"]}}" > ${file}
+	echo $file
+}
+
+quote_items() {
+	items=("$@")
+	quoted_items=
+	for item in "${items[@]}"
+	do
+		quoted_items+=" '${item}'"
+	done
+	echo ${quoted_items}
+}
+
+ssm_send_command() {
+	cmd=$1
+	file=$(create_payload_file "${cmd}")
+	id=$(aws ssm send-command \
+		--document-name "AWS-RunShellScript" \
+		--targets "Key=tag:Name,Values=${NAME}" \
+		--query "Command.CommandId" \
+		--cli-input-json file://${file} \
+		--output text)
+	rm $file
+	echo ${id}
+}
+
+status() {
+	id=$1
+	while true; do
+		status=$(aws ssm list-command-invocations \
+			--command-id $id \
+			--query "CommandInvocations[*].Status" \
+			--output text)
+			
+		if [[ ! "$status" =~ "InProgress" ]]; then
+			echo -e "\nStatus: $status"
+			echo "Detail: https://console.aws.amazon.com/systems-manager/run-command/$id"
+			break
+		fi
+		echo -n .
+		sleep 2
+	done  
+}
 
 create() {
 	echo "Creating Load Test Servers..."
+	count=$1
+	ami_id=$(get_ami_id)
 	aws ec2 run-instances \
-		--image-id ${AMI} \
+		--image-id ${ami_id} \
 		--instance-type ${INSTANCE_TYPE} \
-		--count ${COUNT} \
+		--count ${count} \
 		--associate-public-ip-address \
 		--iam-instance-profile Name=${ROLE} \
 		--tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=$NAME}]" \
@@ -31,50 +87,47 @@ delete() {
     aws ec2 terminate-instances --instance-ids ${instances} > /dev/null
 }
 
-run() {
+cmd() {
 	echo "Sending SSM Command..."
-	id=$(aws ssm send-command \
-		--document-name "AWS-RunShellScript" \
-		--parameters "commands=[${TEST}]" \
-		--targets "Key=tag:Name,Values=${NAME}" \
-		--query "Command.CommandId" \
-		--output text)
-	
-	echo -n "Running Load Test"
-	while true; do
-		status=$(aws ssm list-command-invocations \
-			--command-id $id \
-			--query "CommandInvocations[*].Status" \
-			--output text)
-			
-		if [[ ! "$status" =~ "InProgress" ]]; then
-			echo -e "\nStatus: $status"
-			echo "Detail: https://console.aws.amazon.com/systems-manager/run-command/$id"
-			break
-		fi
-		echo -n .
-		sleep 2
-	done		
+	cmd=$1
+	id=$(ssm_send_command "${cmd}")
+	echo -n "Executing Command"
+	status $id
 }
 
+run() {
+	echo "Sending SSM Command..."
+	args=("$@")
+	quoted_args=$(quote_items "${args[@]}")
+	cmd="ab ${quoted_args}"
+	id=$(ssm_send_command "${cmd}")
+	echo -n "Running Load Test"
+	status $id
+}
 
-case "$CMD" in
+case "$1" in
 	create)
-		COUNT=$2
-        create
+		count=$2
+        create $count
 		;;
 	delete)
         delete
 		;;
 	run)
-		TEST="ab ${@:2}"
-        run
+	    args=("${@:2}")
+	    run "${args[@]}"
+		;;
+	cmd)
+		cmd=${@:2}
+        cmd "${cmd}"
 		;;
 	*)
 		echo "Usage: aws-ab-util <command> [parameters]"
-		echo "  run [ab-options] [http[s]://]hostname[:port]/path"
+		echo "  cmd \"[command]\""
 		echo "  create servers_count"
 		echo "  delete"
+		echo "  run [ab-options] [http[s]://]hostname[:port]/[path]"
 		RETVAL=2
 esac
+
 exit $RETVAL
