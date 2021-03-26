@@ -108,18 +108,18 @@ run() {
 case "$1" in
 	create)
 		count=$2
-        create $count
+		create $count
 		;;
 	delete)
-        delete
+		delete
 		;;
 	run)
-	    args=("${@:2}")
-	    run "${args[@]}"
+		args=("${@:2}")
+		run "${args[@]}"
 		;;
 	cmd)
 		cmd=${@:2}
-        cmd "${cmd}"
+		cmd "${cmd}"
 		;;
 	*)
 		echo "Usage: aws-ab-util <command> [parameters]"
